@@ -37,23 +37,51 @@ const dataUrl = "ai_job_market_insights.xlsx - ai_job_market_insights.csv";
             }
         };
 
-        // --- SPEC 3: SKILLS PACKED BUBBLE (STYLIZED CIRCLES) ---
-        const spec3 = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-            "data": {"url": dataUrl},
-            "width": "container",
-            "transform": [
-                {"aggregate": [{"op": "count", "as": "skill_count"}], "groupby": ["Required_Skills"]}
-            ],
-            "mark": {"type": "circle", "opacity": 0.8, "stroke": "#4338ca", "strokeWidth": 1},
-            "encoding": {
-                "x": {"field": "Required_Skills", "type": "nominal", "axis": null},
-                "y": {"field": "skill_count", "type": "quantitative", "axis": null},
-                "size": {"field": "skill_count", "type": "quantitative", "scale": {"range": [500, 3000]}, "legend": null},
-                "color": {"field": "Required_Skills", "type": "nominal", "legend": null, "scale": {"scheme": "indigoes"}},
-                "tooltip": [{"field": "Required_Skills", "title": "Skill"}, {"field": "skill_count", "title": "Count"}]
-            }
-        };
+       
+const spec3 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {"url": dataUrl},
+  "width": "container",
+  "height": 400,
+  "transform": [
+    // This counts how many times each skill appears
+    {"aggregate": [{"op": "count", "as": "skill_count"}], "groupby": ["Required_Skills"]}
+  ],
+  "mark": {
+    "type": "circle",
+    "opacity": 0.8,
+    "stroke": "#4338ca",
+    "strokeWidth": 1.5
+  },
+  "encoding": {
+    // We use a "point" scale to spread the bubbles out naturally
+    "x": {
+      "field": "Required_Skills", 
+      "type": "nominal", 
+      "axis": {"labelAngle": -45, "title": "Required Skills"}
+    },
+    // The size is the most important part—bigger circle = more common skill
+    "size": {
+      "field": "skill_count", 
+      "type": "quantitative", 
+      "scale": {"range": [500, 5000]}, 
+      "legend": {"title": "Frequency"}
+    },
+    "color": {
+      "field": "Required_Skills", 
+      "type": "nominal", 
+      "legend": null, 
+      "scale": {"scheme": "indigoes"}
+    },
+    "tooltip": [
+      {"field": "Required_Skills", "title": "Skill"},
+      {"field": "skill_count", "title": "Times Mentioned"}
+    ]
+  },
+  "config": {
+    "view": {"stroke": null}
+  }
+};
 
         // 3. RENDER ALL CHARTS
         vegaEmbed('#vis1', spec1, {"actions": false});
